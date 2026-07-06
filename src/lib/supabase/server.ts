@@ -8,8 +8,11 @@ export async function createClient() {
   // error from crashing the build.
   const cookieStore = await cookies()
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  // Prefer private runtime variables (SUPABASE_URL) over public build-time inlined variables.
+  // This prevents Cloudflare/Next.js from hardcoding 'undefined' at build time,
+  // allowing the edge/worker to securely read the variables dynamically at runtime.
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error(
