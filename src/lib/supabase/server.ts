@@ -3,6 +3,11 @@ import { cookies } from 'next/headers'
 import { Database } from '../database.types'
 
 export async function createClient() {
+  // Call cookies() first. This opts the route into dynamic rendering and gracefully
+  // aborts static prerendering for dynamic routes, preventing the missing env var
+  // error from crashing the build.
+  const cookieStore = await cookies()
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
@@ -13,8 +18,6 @@ export async function createClient() {
       'are set in your deployment environment.'
     )
   }
-
-  const cookieStore = await cookies()
 
   return createServerClient<Database>(
     supabaseUrl,
