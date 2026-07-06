@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 const demoSchema = z.object({
@@ -12,7 +12,18 @@ const demoSchema = z.object({
 });
 
 export async function submitDemoRequest(formData: FormData) {
-  const supabase = await createClient();
+  // Use service role key if available to bypass RLS for public form submissions
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  
+  if (!supabaseUrl) {
+    return { error: "Database configuration missing." };
+  }
+  
+  // Create a regular JS client with the service key to bypass RLS
+  // If service key is missing, fallback to anon key, but inserts may fail due to RLS
+  const keyToUse = serviceKey || process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabase = createSupabaseClient(supabaseUrl, keyToUse as string);
 
   const industry = formData.get("industry") as string;
   const cameras = formData.get("cameras") as string;

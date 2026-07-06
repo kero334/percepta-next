@@ -1,11 +1,17 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { AnimatedSection, FadeInView } from "@/components/ui/animations";
 import * as Icons from "lucide-react";
+import { submitDemoRequest } from "./actions";
 
 export default function PilotPage() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
   return (
     <div className="flex flex-col min-h-screen bg-[#09090b] overflow-hidden font-sans text-gray-200">
       
@@ -62,64 +68,98 @@ export default function PilotPage() {
             Please provide your details below. We are currently evaluating facilities for Phase 1 deployments in Egypt.
           </p>
 
-          <form className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-white">First Name</label>
-                <input type="text" className="w-full bg-[#1a1a1c] border border-border/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors" placeholder="John" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-white">Last Name</label>
-                <input type="text" className="w-full bg-[#1a1a1c] border border-border/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors" placeholder="Doe" />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-white">Work Email</label>
-              <input type="email" className="w-full bg-[#1a1a1c] border border-border/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors" placeholder="john@company.com" />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-               <div className="space-y-2">
-                 <label className="text-sm font-medium text-white">Company / Facility Name</label>
-                 <input type="text" className="w-full bg-[#1a1a1c] border border-border/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors" placeholder="Acme Manufacturing" />
-               </div>
-               <div className="space-y-2">
-                 <label className="text-sm font-medium text-white">Location</label>
-                 <select className="w-full bg-[#1a1a1c] border border-border/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors appearance-none">
-                   <option>Egypt</option>
-                   <option>Saudi Arabia</option>
-                   <option>United Arab Emirates</option>
-                   <option>Other</option>
-                 </select>
-               </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-white">Estimated Camera Count</label>
-              <select className="w-full bg-[#1a1a1c] border border-border/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors appearance-none">
-                <option>Less than 50</option>
-                <option>50 - 200</option>
-                <option>200 - 500</option>
-                <option>500+</option>
-              </select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-white">Primary Safety Challenge (Optional)</label>
-              <textarea 
-                className="w-full bg-[#1a1a1c] border border-border/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors min-h-[100px]" 
-                placeholder="Briefly describe the main safety issue you are trying to solve..."
-              />
-            </div>
-
-            <Button type="button" className="w-full h-14 bg-primary text-primary-foreground hover:bg-primary/90 text-lg font-bold mt-4 shadow-lg shadow-primary/20">
-              Submit Application
-            </Button>
+          <form className="space-y-6" action={async (formData) => {
+            setLoading(true);
+            setError(null);
             
-            <p className="text-xs text-center text-muted-foreground mt-4">
-              By submitting, you agree to be contacted regarding the Percepta Design Partner Program.
-            </p>
+            const fullName = `${formData.get('first_name')} ${formData.get('last_name')}`;
+            formData.set('full_name', fullName);
+            formData.set('job_title', 'Not specified'); // Fallback since it's missing from form
+            formData.set('industry', 'Industrial');
+            formData.set('interest', 'Pilot Program');
+            
+            // The action is imported at the top
+            const result = await submitDemoRequest(formData);
+            
+            if (result?.error) {
+              setError(result.error);
+            } else {
+              setSuccess(true);
+            }
+            setLoading(false);
+          }}>
+            {success ? (
+              <div className="bg-emerald-500/10 border border-emerald-500/50 rounded-xl p-8 text-center animate-in fade-in zoom-in duration-300">
+                <Icons.CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto mb-4" />
+                <h3 className="text-xl font-bold text-white mb-2">Application Received</h3>
+                <p className="text-muted-foreground">Thank you for your interest. Our team will review your application and contact you shortly regarding the Design Partner Program.</p>
+              </div>
+            ) : (
+              <>
+                {error && (
+                  <div className="bg-red-500/10 border border-red-500/50 text-red-500 p-4 rounded-lg text-sm mb-6">
+                    {error}
+                  </div>
+                )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-white">First Name</label>
+                    <input name="first_name" required type="text" className="w-full bg-[#1a1a1c] border border-border/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors" placeholder="John" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-white">Last Name</label>
+                    <input name="last_name" required type="text" className="w-full bg-[#1a1a1c] border border-border/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors" placeholder="Doe" />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-white">Work Email</label>
+                  <input name="email" required type="email" className="w-full bg-[#1a1a1c] border border-border/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors" placeholder="john@company.com" />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                   <div className="space-y-2">
+                     <label className="text-sm font-medium text-white">Company / Facility Name</label>
+                     <input name="company_name" required type="text" className="w-full bg-[#1a1a1c] border border-border/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors" placeholder="Acme Manufacturing" />
+                   </div>
+                   <div className="space-y-2">
+                     <label className="text-sm font-medium text-white">Location</label>
+                     <select name="location" className="w-full bg-[#1a1a1c] border border-border/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors appearance-none">
+                       <option>Egypt</option>
+                       <option>Saudi Arabia</option>
+                       <option>United Arab Emirates</option>
+                       <option>Other</option>
+                     </select>
+                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-white">Estimated Camera Count</label>
+                  <select name="cameras" className="w-full bg-[#1a1a1c] border border-border/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors appearance-none">
+                    <option>Less than 50</option>
+                    <option>50 - 200</option>
+                    <option>200 - 500</option>
+                    <option>500+</option>
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-white">Primary Safety Challenge (Optional)</label>
+                  <textarea name="message"
+                    className="w-full bg-[#1a1a1c] border border-border/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors min-h-[100px]" 
+                    placeholder="Briefly describe the main safety issue you are trying to solve..."
+                  />
+                </div>
+
+                <Button type="submit" disabled={loading} className="w-full h-14 bg-primary text-primary-foreground hover:bg-primary/90 text-lg font-bold mt-4 shadow-lg shadow-primary/20">
+                  {loading ? "Submitting..." : "Submit Application"}
+                </Button>
+                
+                <p className="text-xs text-center text-muted-foreground mt-4">
+                  By submitting, you agree to be contacted regarding the Percepta Design Partner Program.
+                </p>
+              </>
+            )}
           </form>
         </div>
       </AnimatedSection>

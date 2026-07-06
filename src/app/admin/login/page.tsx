@@ -7,8 +7,17 @@ export const metadata = {
 };
 
 export default async function LoginPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  let user = null;
+  let authError = null;
+
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  } catch (error: any) {
+    console.error("Login Page Auth Error:", error.message || error);
+    authError = error.message || "Failed to initialize Supabase client";
+  }
 
   if (user) {
     redirect("/admin/dashboard");
@@ -26,6 +35,11 @@ export default async function LoginPage() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        {authError && (
+          <div className="mb-4 bg-red-500/10 border border-red-500/50 text-red-500 p-4 rounded-lg text-sm">
+            <strong>System Error:</strong> {authError}
+          </div>
+        )}
         <div className="bg-[#121214] border border-border/20 py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <LoginForm />
         </div>
