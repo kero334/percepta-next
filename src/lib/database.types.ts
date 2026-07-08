@@ -124,21 +124,21 @@ export interface Database {
       resource_redirects: {
         Row: {
           id: string
-          resource_id: string
+          resource_id: string | null
           old_slug: string
           new_slug: string
           created_at: string
         }
         Insert: {
           id?: string
-          resource_id: string
+          resource_id?: string | null
           old_slug: string
           new_slug: string
           created_at?: string
         }
         Update: {
           id?: string
-          resource_id?: string
+          resource_id?: string | null
           old_slug?: string
           new_slug?: string
           created_at?: string

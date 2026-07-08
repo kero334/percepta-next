@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { createRedirect, deleteRedirect } from "@/lib/cms/redirect-actions";
 import * as Icons from "lucide-react";
 
-export default function RedirectsClient({ initialRedirects, role, allResources }: { initialRedirects: any[], role: string, allResources: any[] }) {
+export default function RedirectsClient({ initialRedirects, role }: { initialRedirects: any[], role: string }) {
   const [redirects, setRedirects] = useState(initialRedirects);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isAdmin = role === "admin";
@@ -18,10 +18,9 @@ export default function RedirectsClient({ initialRedirects, role, allResources }
     const formData = new FormData(e.currentTarget);
     const oldSlug = formData.get("old_slug") as string;
     const newSlug = formData.get("new_slug") as string;
-    const resourceId = formData.get("resource_id") as string;
 
     try {
-      await createRedirect(oldSlug, newSlug, resourceId);
+      await createRedirect(oldSlug, newSlug);
       // Let Next.js revalidate or just reload
       window.location.reload();
     } catch (err: any) {
@@ -52,7 +51,6 @@ export default function RedirectsClient({ initialRedirects, role, allResources }
               <tr>
                 <th className="px-6 py-4 font-medium">Old Slug</th>
                 <th className="px-6 py-4 font-medium">New Slug</th>
-                <th className="px-6 py-4 font-medium">Target Resource</th>
                 {isAdmin && <th className="px-6 py-4 font-medium text-right">Actions</th>}
               </tr>
             </thead>
@@ -61,9 +59,6 @@ export default function RedirectsClient({ initialRedirects, role, allResources }
                 <tr key={r.id} className="hover:bg-white/[0.02] transition-colors">
                   <td className="px-6 py-4 font-mono text-xs">{r.old_slug}</td>
                   <td className="px-6 py-4 font-mono text-xs">{r.new_slug}</td>
-                  <td className="px-6 py-4">
-                    {r.resources?.title} <span className="text-xs font-mono ml-2">({r.resources?.slug})</span>
-                  </td>
                   {isAdmin && (
                     <td className="px-6 py-4 text-right">
                       <Button variant="ghost" size="icon" onClick={() => handleDelete(r.id)} className="text-red-400 hover:text-red-300 hover:bg-red-400/10">
@@ -75,7 +70,7 @@ export default function RedirectsClient({ initialRedirects, role, allResources }
               ))}
               {redirects.length === 0 && (
                 <tr>
-                  <td colSpan={isAdmin ? 4 : 3} className="px-6 py-8 text-center text-muted-foreground">
+                  <td colSpan={isAdmin ? 3 : 2} className="px-6 py-8 text-center text-muted-foreground">
                     No active redirects found.
                   </td>
                 </tr>
@@ -101,17 +96,8 @@ export default function RedirectsClient({ initialRedirects, role, allResources }
                 <Input type="text" name="old_slug" required placeholder="e.g. old-article-url" className="bg-[#09090b] text-white border-border/40 font-mono text-sm" />
               </div>
               <div>
-                <label className="text-sm font-medium text-white mb-1 block">New Slug</label>
+                <label className="text-sm font-medium text-white mb-1 block">New Slug (or URL)</label>
                 <Input type="text" name="new_slug" required placeholder="e.g. new-article-url" className="bg-[#09090b] text-white border-border/40 font-mono text-sm" />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-white mb-1 block">Target Resource</label>
-                <select name="resource_id" required className="w-full h-10 rounded-md border border-border/40 bg-[#09090b] px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary">
-                  <option value="">Select resource...</option>
-                  {allResources.map((res: any) => (
-                    <option key={res.id} value={res.id}>{res.title} (/{res.slug})</option>
-                  ))}
-                </select>
               </div>
               <Button type="submit" disabled={isSubmitting} className="w-full bg-primary text-black hover:bg-primary/90 mt-4">
                 {isSubmitting ? "Creating..." : "Create 301 Redirect"}

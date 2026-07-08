@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { verifyAdminAccess } from "./auth";
 import { revalidatePath } from "next/cache";
 
-export async function createRedirect(oldSlug: string, newSlug: string, resourceId: string) {
+export async function createRedirect(oldSlug: string, newSlug: string) {
   const { authorized, role, user } = await verifyAdminAccess();
   if (!authorized || !user) throw new Error("Unauthorized");
   if (role !== "admin") throw new Error("Only admins can create manual redirects");
@@ -15,7 +15,6 @@ export async function createRedirect(oldSlug: string, newSlug: string, resourceI
   const { data: newRedirect, error } = await supabase.from("resource_redirects").insert({
     old_slug: oldSlug,
     new_slug: newSlug,
-    resource_id: resourceId
   }).select("id").single();
 
   if (error) throw new Error(`Failed to create redirect: ${error.message}`);
@@ -26,7 +25,7 @@ export async function createRedirect(oldSlug: string, newSlug: string, resourceI
     action_type: "CREATE_MANUAL_REDIRECT",
     table_name: "resource_redirects",
     record_id: newRedirect.id,
-    new_data: { old_slug: oldSlug, new_slug: newSlug, resource_id: resourceId }
+    new_data: { old_slug: oldSlug, new_slug: newSlug }
   });
 
   revalidatePath("/admin/redirects");
