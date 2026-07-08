@@ -1,12 +1,10 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 import { FadeInView } from "@/components/ui/animations";
 import * as Icons from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
-import { resources, StaticResource } from "@/lib/config/resources";
+import { resources } from "@/lib/config/resources";
 
 const getIconForType = (type: string) => {
   switch (type) {
@@ -28,79 +26,23 @@ const getBadgeColorForType = (type: string) => {
   }
 };
 
-export default function ResourcesClient() {
-  const [activeDocument, setActiveDocument] = useState<StaticResource | null>(null);
+const getButtonTextForType = (type: string) => {
+  switch (type) {
+    case "video": return "Watch Video";
+    case "presentation": return "View Presentation";
+    case "document":
+    case "pdf": return "View Document";
+    default: return "View Resource";
+  }
+};
 
+export default function ResourcesClient() {
   const featuredResources = resources.filter(r => r.featured);
   const regularResources = resources.filter(r => !r.featured);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#09090b] overflow-hidden pb-24 font-sans text-gray-200">
       
-      {/* IMMERSIVE FULL-SCREEN MODAL */}
-      <AnimatePresence>
-        {activeDocument && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-black/95 backdrop-blur-xl"
-          >
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="w-full max-w-7xl h-[90vh] bg-[#121214] rounded-2xl border border-border/30 overflow-hidden flex flex-col shadow-2xl relative"
-            >
-              {/* Modal Header */}
-              <div className="flex items-center justify-between p-4 border-b border-border/30 bg-[#121214]">
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${getBadgeColorForType(activeDocument.type)}`}>
-                    {(() => {
-                      const IconComponent = getIconForType(activeDocument.type);
-                      return <IconComponent className="w-5 h-5" />;
-                    })()}
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-white leading-none">{activeDocument.title}</h3>
-                    <p className="text-xs text-muted-foreground mt-1 uppercase tracking-wider font-semibold">{activeDocument.type}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <a href={activeDocument.url} target="_blank" rel="noopener noreferrer">
-                    <Button variant="outline" size="sm" className="gap-2 border-border/50 hover:bg-white/10 transition-colors">
-                      Open Externally <Icons.ExternalLink className="w-4 h-4" />
-                    </Button>
-                  </a>
-                  <Button variant="ghost" size="icon" onClick={() => setActiveDocument(null)} className="rounded-full hover:bg-red-500/10 hover:text-red-500 transition-colors">
-                    <Icons.X className="w-5 h-5" />
-                  </Button>
-                </div>
-              </div>
-              
-              {/* iframe Container */}
-              <div className="flex-1 bg-black relative flex flex-col items-center justify-center">
-                <iframe 
-                  src={activeDocument.url}
-                  className="w-full h-full border-none absolute inset-0"
-                  title={activeDocument.title}
-                  allow="autoplay; fullscreen; picture-in-picture"
-                />
-                
-                {/* Fallback visible behind iframe while loading or if blocked */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground -z-10 bg-[#09090b]">
-                   <Icons.Loader2 className="w-8 h-8 animate-spin mb-4 text-primary" />
-                   <p className="text-sm">Loading secure preview...</p>
-                   <a href={activeDocument.url} target="_blank" rel="noopener noreferrer" className="mt-4">
-                     <Button variant="link" className="text-primary">Click here if the preview does not load</Button>
-                   </a>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* 1. HERO SECTION */}
       <section className="pt-32 pb-16 relative overflow-hidden flex flex-col items-center text-center px-4 sm:px-6 lg:px-8">
         <div className="absolute top-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
@@ -124,9 +66,11 @@ export default function ResourcesClient() {
              <h2 className="text-2xl font-bold text-white mb-8 border-l-4 border-primary pl-4">Featured Highlights</h2>
              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {featuredResources.map((resource, idx) => (
-                   <div 
+                   <a 
+                     href={resource.url}
+                     target="_blank"
+                     rel="noopener noreferrer"
                      key={resource.id}
-                     onClick={() => setActiveDocument(resource)}
                      className={`group relative bg-[#121214] border border-border/20 rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10 flex flex-col ${idx === 0 ? 'lg:col-span-2 lg:flex-row' : ''}`}
                    >
                       {/* Optional Thumbnail */}
@@ -160,11 +104,11 @@ export default function ResourcesClient() {
                          <p className={`${idx === 0 ? 'text-base' : 'text-sm'} text-muted-foreground leading-relaxed mb-6`}>{resource.description}</p>
                          
                          <div className="mt-auto flex items-center text-sm font-semibold text-primary">
-                            <span>Open Media</span>
+                            <span>{getButtonTextForType(resource.type)}</span>
                             <Icons.ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                          </div>
                       </div>
-                   </div>
+                   </a>
                 ))}
              </div>
            </FadeInView>
@@ -178,9 +122,11 @@ export default function ResourcesClient() {
              <h2 className="text-2xl font-bold text-white mb-8 border-l-4 border-border/50 pl-4">Library</h2>
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {regularResources.map((resource) => (
-                   <div 
+                   <a 
+                     href={resource.url}
+                     target="_blank"
+                     rel="noopener noreferrer"
                      key={resource.id}
-                     onClick={() => setActiveDocument(resource)}
                      className="bg-[#121214] border border-border/20 p-6 md:p-8 rounded-2xl hover:border-primary/40 hover:bg-[#151518] transition-all cursor-pointer group flex flex-col h-full"
                    >
                       <div className="flex items-start justify-between mb-6">
@@ -203,9 +149,9 @@ export default function ResourcesClient() {
                       <p className="text-sm text-muted-foreground flex-1 leading-relaxed mb-6">{resource.description}</p>
                       
                       <div className="mt-auto pt-4 border-t border-border/10 flex items-center justify-between text-xs font-semibold text-muted-foreground group-hover:text-white transition-colors">
-                         <span>View Resource</span>
+                         <span>{getButtonTextForType(resource.type)}</span>
                       </div>
-                   </div>
+                   </a>
                 ))}
              </div>
            </FadeInView>

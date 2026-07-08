@@ -22,41 +22,27 @@ export interface StaticResource {
 
 export const resources: StaticResource[] = [
   {
-    id: "company-overview",
-    title: "Percepta Company Overview",
-    type: "presentation",
-    description: "An in-depth look at Percepta's mission, edge computing architecture, and the future of industrial safety.",
-    url: "https://drive.google.com/file/d/placeholder_overview/preview", // Replace with real link later
-    featured: true,
-  },
-  {
-    id: "mvp-demo",
-    title: "Percepta MVP Demo",
+    id: "company-introduction",
+    title: "Percepta Company Introduction",
     type: "video",
-    description: "Watch a live demonstration of our computer vision system identifying safety hazards in real-time.",
-    url: "https://drive.google.com/file/d/placeholder_mvp/preview",
+    description: "Learn about Percepta's vision, mission, technology, and how our AI-powered safety platform transforms existing CCTV infrastructure into proactive workplace safety intelligence.",
+    url: "https://drive.google.com/file/d/12wKwtYw0AOMXE9LmM31z8_CSGbDpz3nK/view?usp=drive_link",
     featured: true,
   },
   {
-    id: "product-vision",
-    title: "Product Vision",
-    type: "document",
-    description: "Our strategic roadmap for scaling AI-driven forensic safety across global manufacturing centers.",
-    url: "https://drive.google.com/file/d/placeholder_vision/preview",
+    id: "company-presentation",
+    title: "Percepta Company Presentation",
+    type: "presentation",
+    description: "Explore our company overview, market opportunity, problem statement, technology approach, business model, and future growth strategy.",
+    url: "https://drive.google.com/file/d/1JfQFIhc1tyZFDKYueCtrjHyE2bPGqGYE/view?usp=drive_link",
     featured: true,
   },
   {
-    id: "edge-architecture-spec",
-    title: "Edge Architecture Specification",
-    type: "pdf",
-    description: "Technical specifications detailing our low-latency edge deployment model and data privacy guarantees.",
-    url: "https://drive.google.com/file/d/placeholder_edge/preview",
-  },
-  {
-    id: "deployment-guide",
-    title: "Deployment Guide",
+    id: "business-model",
+    title: "Percepta Business Model",
     type: "document",
-    description: "Step-by-step instructions for integrating Percepta sensor nodes into existing factory infrastructure.",
-    url: "https://drive.google.com/file/d/placeholder_guide/preview",
+    description: "Review Percepta's business model, customer segments, revenue strategy, value proposition, and scalability roadmap.",
+    url: "https://drive.google.com/file/d/1kRAt8Ez6O6lE0jH60BOZ9DJCEBtkdDrd/view?usp=drive_link",
+    featured: true,
   }
 ];
