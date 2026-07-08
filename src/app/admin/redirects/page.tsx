@@ -14,14 +14,17 @@ export default async function RedirectsPage() {
   const supabase = await createClient();
   const { data: redirects, error } = await supabase
     .from("resource_redirects")
-    .select("*")
+    .select("*, resources(title, slug)")
     .order("created_at", { ascending: false });
 
   if (error) {
     console.error("Failed to fetch redirects:", error);
   }
 
-
+  // Also fetch all resources for the dropdown if admin
+  const { data: allResources } = role === "admin" 
+    ? await supabase.from("resources").select("id, title, slug").order("title")
+    : { data: [] };
 
   return (
     <div className="p-8">
@@ -30,7 +33,7 @@ export default async function RedirectsPage() {
         <p className="text-muted-foreground">Manage HTTP 301 Permanent Redirects for content migrations and slug changes.</p>
       </div>
 
-      <RedirectsClient initialRedirects={redirects || []} role={role || ""} />
+      <RedirectsClient initialRedirects={redirects || []} role={role || ""} allResources={allResources || []} />
     </div>
   );
 }
