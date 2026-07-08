@@ -1,168 +1,148 @@
-"use client";
-
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { AnimatedSection, FadeInView } from "@/components/ui/animations";
+import Link from "next/link";
+import Image from "next/image";
 import * as Icons from "lucide-react";
-import { submitDemoRequest } from "./actions";
 
 export default function PilotPage() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
-
   return (
     <div className="flex flex-col min-h-screen bg-[#09090b] overflow-hidden font-sans text-gray-200">
       
-      {/* 1. HERO SECTION */}
-      <section className="pt-32 pb-16 relative overflow-hidden flex flex-col items-center">
-        <div className="absolute inset-0 z-0 opacity-20 pointer-events-none overflow-hidden">
-          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-primary/20 rounded-full blur-[150px] animate-pulse-slow" />
+      {/* SECTION 1: HERO */}
+      <section className="pt-32 pb-16 relative flex flex-col items-center text-center">
+        <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[500px] bg-primary/20 rounded-full blur-[120px] animate-pulse-slow" />
         </div>
 
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 max-w-4xl text-center">
-          <FadeInView>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest mb-6">
-              Early Access
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 max-w-4xl">
+          <div className="flex justify-center mb-8">
+            {/* Using an SVG or simple stylized element if the logo image isn't available, but we'll try to load logo.svg or use text fallback */}
+            <div className="flex items-center gap-2 text-2xl font-bold text-white">
+              <Icons.Shield className="w-8 h-8 text-primary" />
+              Percepta
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight leading-tight">
-              Join the Percepta <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-400">Design Partner Program.</span>
-            </h1>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
-              We are actively looking for forward-thinking industrial leaders in Egypt, KSA, and the UAE to test our early models and shape the future of safety intelligence.
-            </p>
-          </FadeInView>
+          </div>
+          
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest mb-6">
+            WELCOME TO OUR WAITLIST
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
+            Join Percepta&apos;s Early Access & <br className="hidden md:block" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-400">Pilot Program</span>
+          </h1>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            Be among the first organizations helping shape the future of AI-powered workplace safety.
+          </p>
         </div>
       </section>
 
-      {/* 2. VALUE PROPOSITION */}
-      <AnimatedSection className="py-12 container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
-         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-            <div className="bg-[#121214] border border-border/40 p-6 rounded-2xl text-center">
-               <Icons.MapPin className="w-8 h-8 text-primary mx-auto mb-4" />
-               <h3 className="font-bold text-white mb-2">Localized Focus</h3>
-               <p className="text-sm text-muted-foreground">Our initial rollout targets the specific operational challenges of the MENA industrial sector.</p>
-            </div>
-            <div className="bg-[#121214] border border-border/40 p-6 rounded-2xl text-center">
-               <Icons.Compass className="w-8 h-8 text-primary mx-auto mb-4" />
-               <h3 className="font-bold text-white mb-2">Influence the Roadmap</h3>
-               <p className="text-sm text-muted-foreground">Work directly with the founder to prioritize the hazard detection models that matter most to your facility.</p>
-            </div>
-            <div className="bg-[#121214] border border-border/40 p-6 rounded-2xl text-center">
-               <Icons.Zap className="w-8 h-8 text-primary mx-auto mb-4" />
-               <h3 className="font-bold text-white mb-2">Early Access</h3>
-               <p className="text-sm text-muted-foreground">Be the first to integrate proactive safety intelligence into your operations ahead of general availability.</p>
-            </div>
-         </div>
-      </AnimatedSection>
-
-      {/* 3. APPLICATION FORM */}
-      <AnimatedSection className="pb-32 container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
-        <div className="bg-[#111113] border border-border/30 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-emerald-400 to-blue-500" />
-          
-          <h2 className="text-2xl font-bold text-white mb-2">Design Partner Application</h2>
-          <p className="text-sm text-muted-foreground mb-8">
-            Please provide your details below. We are currently evaluating facilities for Phase 1 deployments in Egypt.
-          </p>
-
-          <form className="space-y-6" action={async (formData) => {
-            setLoading(true);
-            setError(null);
-            
-            const fullName = `${formData.get('first_name')} ${formData.get('last_name')}`;
-            formData.set('full_name', fullName);
-            formData.set('job_title', 'Not specified'); // Fallback since it's missing from form
-            formData.set('industry', 'Industrial');
-            formData.set('interest', 'Pilot Program');
-            
-            // The action is imported at the top
-            const result = await submitDemoRequest(formData);
-            
-            if (result?.error) {
-              setError(result.error);
-            } else {
-              setSuccess(true);
-            }
-            setLoading(false);
-          }}>
-            {success ? (
-              <div className="bg-emerald-500/10 border border-emerald-500/50 rounded-xl p-8 text-center animate-in fade-in zoom-in duration-300">
-                <Icons.CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-white mb-2">Application Received</h3>
-                <p className="text-muted-foreground">Thank you for your interest. Our team will review your application and contact you shortly regarding the Design Partner Program.</p>
-              </div>
-            ) : (
-              <>
-                {error && (
-                  <div className="bg-red-500/10 border border-red-500/50 text-red-500 p-4 rounded-lg text-sm mb-6">
-                    {error}
-                  </div>
-                )}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-white">First Name</label>
-                    <input name="first_name" required type="text" className="w-full bg-[#1a1a1c] border border-border/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors" placeholder="John" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-white">Last Name</label>
-                    <input name="last_name" required type="text" className="w-full bg-[#1a1a1c] border border-border/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors" placeholder="Doe" />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-white">Work Email</label>
-                  <input name="email" required type="email" className="w-full bg-[#1a1a1c] border border-border/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors" placeholder="john@company.com" />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                   <div className="space-y-2">
-                     <label className="text-sm font-medium text-white">Company / Facility Name</label>
-                     <input name="company_name" required type="text" className="w-full bg-[#1a1a1c] border border-border/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors" placeholder="Acme Manufacturing" />
-                   </div>
-                   <div className="space-y-2">
-                     <label className="text-sm font-medium text-white">Location</label>
-                     <select name="location" className="w-full bg-[#1a1a1c] border border-border/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors appearance-none">
-                       <option>Egypt</option>
-                       <option>Saudi Arabia</option>
-                       <option>United Arab Emirates</option>
-                       <option>Other</option>
-                     </select>
-                   </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-white">Estimated Camera Count</label>
-                  <select name="cameras" className="w-full bg-[#1a1a1c] border border-border/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors appearance-none">
-                    <option>Less than 50</option>
-                    <option>50 - 200</option>
-                    <option>200 - 500</option>
-                    <option>500+</option>
-                  </select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-white">Primary Safety Challenge (Optional)</label>
-                  <textarea name="message"
-                    className="w-full bg-[#1a1a1c] border border-border/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors min-h-[100px]" 
-                    placeholder="Briefly describe the main safety issue you are trying to solve..."
-                  />
-                </div>
-
-                <Button type="submit" disabled={loading} className="w-full h-14 bg-primary text-primary-foreground hover:bg-primary/90 text-lg font-bold mt-4 shadow-lg shadow-primary/20">
-                  {loading ? "Submitting..." : "Submit Application"}
-                </Button>
-                
-                <p className="text-xs text-center text-muted-foreground mt-4">
-                  By submitting, you agree to be contacted regarding the Percepta Design Partner Program.
-                </p>
-              </>
-            )}
-          </form>
+      {/* SECTION 2: FEATURES */}
+      <section className="py-12 container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-[#121214] border border-border/40 p-8 rounded-2xl text-center shadow-lg">
+            <Icons.Zap className="w-10 h-10 text-primary mx-auto mb-5" />
+            <h3 className="font-bold text-white text-lg mb-3">Early Access</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Get access to upcoming Percepta features before public release and integrate proactive safety intelligence into your operations.
+            </p>
+          </div>
+          <div className="bg-[#121214] border border-border/40 p-8 rounded-2xl text-center shadow-lg">
+            <Icons.Compass className="w-10 h-10 text-emerald-400 mx-auto mb-5" />
+            <h3 className="font-bold text-white text-lg mb-3">Pilot Program</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Participate in real-world testing and validation tailored to the specific operational challenges of your facility.
+            </p>
+          </div>
+          <div className="bg-[#121214] border border-border/40 p-8 rounded-2xl text-center shadow-lg">
+            <Icons.MessageSquare className="w-10 h-10 text-blue-400 mx-auto mb-5" />
+            <h3 className="font-bold text-white text-lg mb-3">Direct Feedback</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Help shape the future roadmap of Percepta. Work directly with the founder to prioritize the models that matter most.
+            </p>
+          </div>
         </div>
-      </AnimatedSection>
+      </section>
+
+      {/* SECTION 3: RESOURCES */}
+      <section className="py-12 container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl text-center">
+        <div className="bg-primary/5 border border-primary/20 rounded-3xl p-10">
+          <h2 className="text-2xl font-bold text-white mb-4">Learn More About Percepta</h2>
+          <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
+            Explore presentations, MVP demonstrations, and additional resources before applying to the program.
+          </p>
+          <Link href="/resources" className="inline-flex h-11 items-center justify-center rounded-md px-8 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground">
+            View Resources
+          </Link>
+        </div>
+      </section>
+
+      {/* SECTION 4: GOOGLE FORM IFRAME */}
+      <section className="py-16 container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+        <div className="bg-[#111113] border border-border/30 rounded-3xl overflow-hidden shadow-2xl relative min-h-[800px]">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-emerald-400 to-blue-500 z-10" />
+          
+          {/* Loading State Fallback */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="flex flex-col items-center">
+              <Icons.Loader2 className="w-8 h-8 text-primary animate-spin mb-4" />
+              <p className="text-sm text-muted-foreground">Loading Application Form...</p>
+            </div>
+          </div>
+          
+          <iframe 
+            src="https://docs.google.com/forms/d/e/1FAIpQLScySPUwTm_c03DuriOamu-2NRXgERqR6dvEjGnfcSfoV14SrQ/viewform?embedded=true" 
+            width="100%" 
+            height="1200" 
+            frameBorder="0" 
+            marginHeight={0} 
+            marginWidth={0}
+            className="relative z-10 w-full bg-transparent"
+            title="Percepta Waitlist Application Form"
+            style={{ minHeight: "1200px", border: "none", overflow: "hidden" }}
+            scrolling="no"
+          >
+            Loading…
+          </iframe>
+        </div>
+      </section>
+
+      {/* SECTION 5: CONTACT INFORMATION */}
+      <section className="py-16 mb-16 container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl text-center border-t border-border/40">
+        <h2 className="text-xl font-semibold text-white mb-8">Contact Information</h2>
+        <div className="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-16">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
+              <Icons.User className="w-5 h-5 text-muted-foreground" />
+            </div>
+            <div className="text-left">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Founder</p>
+              <p className="text-white font-medium">Kerollos Karam</p>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
+              <Icons.Mail className="w-5 h-5 text-muted-foreground" />
+            </div>
+            <div className="text-left">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Email</p>
+              <a href="mailto:kerokaram2022@gmail.com" className="text-white font-medium hover:text-primary transition-colors">
+                kerokaram2022@gmail.com
+              </a>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
+              <Icons.Globe className="w-5 h-5 text-muted-foreground" />
+            </div>
+            <div className="text-left">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Website</p>
+              <a href="https://percepta.sbs" className="text-white font-medium hover:text-primary transition-colors">
+                https://percepta.sbs
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
 
     </div>
   );
