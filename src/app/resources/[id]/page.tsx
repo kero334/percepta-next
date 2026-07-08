@@ -2,13 +2,8 @@ import { resources } from "@/lib/config/resources";
 import { notFound } from "next/navigation";
 import ResourceViewerClient from "./ResourceViewerClient";
 
-export const dynamicParams = false; // Serve only statically generated routes
-
-export async function generateStaticParams() {
-  return resources.map((resource) => ({
-    id: resource.id,
-  }));
-}
+export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
