@@ -5,6 +5,7 @@ import { FadeInView } from "@/components/ui/animations";
 import * as Icons from "lucide-react";
 import Image from "next/image";
 import { resources } from "@/lib/config/resources";
+import Link from "next/link";
 
 const getIconForType = (type: string) => {
   switch (type) {
@@ -66,10 +67,8 @@ export default function ResourcesClient() {
              <h2 className="text-2xl font-bold text-white mb-8 border-l-4 border-primary pl-4">Featured Highlights</h2>
              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {featuredResources.map((resource, idx) => (
-                   <a 
-                     href={resource.url}
-                     target="_blank"
-                     rel="noopener noreferrer"
+                   <Link 
+                     href={`/resources/${resource.id}`}
                      key={resource.id}
                      className={`group relative bg-[#121214] border border-border/20 rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10 flex flex-col ${idx === 0 ? 'lg:col-span-2 lg:flex-row' : ''}`}
                    >
@@ -108,7 +107,7 @@ export default function ResourcesClient() {
                             <Icons.ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                          </div>
                       </div>
-                   </a>
+                   </Link>
                 ))}
              </div>
            </FadeInView>
@@ -122,10 +121,8 @@ export default function ResourcesClient() {
              <h2 className="text-2xl font-bold text-white mb-8 border-l-4 border-border/50 pl-4">Library</h2>
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {regularResources.map((resource) => (
-                   <a 
-                     href={resource.url}
-                     target="_blank"
-                     rel="noopener noreferrer"
+                   <Link 
+                     href={`/resources/${resource.id}`}
                      key={resource.id}
                      className="bg-[#121214] border border-border/20 p-6 md:p-8 rounded-2xl hover:border-primary/40 hover:bg-[#151518] transition-all cursor-pointer group flex flex-col h-full"
                    >
@@ -151,7 +148,7 @@ export default function ResourcesClient() {
                       <div className="mt-auto pt-4 border-t border-border/10 flex items-center justify-between text-xs font-semibold text-muted-foreground group-hover:text-white transition-colors">
                          <span>{getButtonTextForType(resource.type)}</span>
                       </div>
-                   </a>
+                   </Link>
                 ))}
              </div>
            </FadeInView>
