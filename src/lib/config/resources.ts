@@ -38,11 +38,19 @@ export const resources: StaticResource[] = [
     featured: true,
   },
   {
+    id: "mvp-demo",
+    title: "Percepta MVP Demo",
+    type: "video",
+    description: "Watch a live demonstration of our computer vision system identifying safety hazards in real-time.",
+    url: "https://drive.google.com/file/d/1B0qT7e923V58pY8W7S6lZ0m9P3Y6P4bW/view?usp=drive_link",
+    featured: true,
+  },
+  {
     id: "business-model",
     title: "Percepta Business Model",
     type: "document",
     description: "Review Percepta's business model, customer segments, revenue strategy, value proposition, and scalability roadmap.",
     url: "https://drive.google.com/file/d/1kRAt8Ez6O6lE0jH60BOZ9DJCEBtkdDrd/view?usp=drive_link",
-    featured: true,
+    featured: false,
   }
 ];
